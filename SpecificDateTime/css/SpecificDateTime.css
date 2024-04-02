@@ -1,0 +1,27 @@
+
+.RBH\.SpecificDateTime input {
+    display: block;
+    border: 0;
+    width: auto;
+    font-size: 15px;
+}
+
+.RBH\.SpecificDateTime input[type=date] {
+    width: auto;
+    height: auto;
+}
+.RBH\.SpecificDateTime input[type=time] {
+    width: auto;
+    height: auto;
+    padding-left: 5px;
+}
+.RBH\.SpecificDateTime .dateControlContainer {
+    display: flex;   
+    text-align: center;
+    position:relative;
+    border: 1px solid #ccc;
+}
+
+.RBH\.SpecificDateTime input:read-only {
+    background-color: lightgray;
+}
