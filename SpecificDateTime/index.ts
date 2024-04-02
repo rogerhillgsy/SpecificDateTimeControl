@@ -1,7 +1,8 @@
 import { IInputs, IOutputs } from "./generated/ManifestTypes";
 
-export class SpecificDateTime implements ComponentFramework.StandardControl<IInputs, IOutputs> {
-
+export class SpecificDateTime
+    implements ComponentFramework.StandardControl<IInputs, IOutputs>
+{
     private _displayedDateValue?: Date;
     private _displayedTimeValue?: string;
     private _dateTimeValue?: Date;
@@ -19,19 +20,16 @@ export class SpecificDateTime implements ComponentFramework.StandardControl<IInp
     /**
      * Empty constructor.
      */
-    constructor()
-    {
-
-    }
-  /**
+    constructor() {}
+    /**
      * called on UI updates to the date input field.
      * @param evt Update event for date field
      */
-  private dateUpdated(evt: Event) {
-    this._displayedDateValue = new Date(this.dateInputElement.value);
-    this.updateDataModel();
-}
-
+    private dateUpdated(evt: Event) {
+        this._displayedDateValue = new Date(this.dateInputElement.value);
+        this.updateDataModel();
+    }
+    
     /**
      * Called on UI updates to the time input field.
      * @param evt Update event for the time field
@@ -44,38 +42,40 @@ export class SpecificDateTime implements ComponentFramework.StandardControl<IInp
     /**
      * Determine if the parsed date/time value requires an update in the Model driven app stored value.
      */
-        private updateDataModel() {
-            this._dateTimeValue = this.composeDateTime();
-            if (this._dateTimeValue != this._lastNotifiedValue) {
-                this._lastNotifiedValue = this._dateTimeValue;
-                this._notifyOutputChanged(); // Tell the model driven app framework that the control value has changed.
-            }
+    private updateDataModel() {
+        this._dateTimeValue = this.composeDateTime();
+        if (this._dateTimeValue != this._lastNotifiedValue) {
+            this._lastNotifiedValue = this._dateTimeValue;
+            this._notifyOutputChanged(); // Tell the model driven app framework that the control value has changed.
         }
+    }
 
-        /**
-         * Try to parse the date and time fields into a valid value. 
-         * If the full date and time cannot be parse, return undefined.
-         * 
-         * @returns currently displayed date (or undefined)
-         */
-        private composeDateTime(): Date | undefined {
-            const date = this._displayedDateValue;
-            const time = this._displayedTimeValue ?? "";
-            const timeParts = time.split(":");
-            if (  date && 
-                  !isNaN(date.getTime()) &&
-                  timeParts.length == 2 &&
-                  date.getFullYear() >= 2023 ) {
-                const hours = parseInt(timeParts[0]);
-                const minutes = parseInt(timeParts[1]);
-                if (date && hours && minutes) {
-                    date.setHours(hours);
-                    date.setMinutes(minutes);
-                }
-                return date;
+    /**
+     * Try to parse the date and time fields into a valid value.
+     * If the full date and time cannot be parse, return undefined.
+     *
+     * @returns currently displayed date (or undefined)
+     */
+    private composeDateTime(): Date | undefined {
+        const date = this._displayedDateValue;
+        const time = this._displayedTimeValue ?? "";
+        const timeParts = time.split(":");
+        if (
+            date &&
+            !isNaN(date.getTime()) &&
+            timeParts.length == 2 &&
+            date.getFullYear() >= 2023
+        ) {
+            const hours = parseInt(timeParts[0]);
+            const minutes = parseInt(timeParts[1]);
+            if (date && hours && minutes) {
+                date.setHours(hours);
+                date.setMinutes(minutes);
             }
-            return undefined;
+            return date;
         }
+        return undefined;
+    }
     /**
      * Used to initialize the control instance. Controls can kick off remote server calls and other initialization actions here.
      * Data-set values are not initialized here, use updateView.
@@ -84,18 +84,25 @@ export class SpecificDateTime implements ComponentFramework.StandardControl<IInp
      * @param state A piece of data that persists in one session for a single user. Can be set at any point in a controls life cycle by calling 'setControlState' in the Mode interface.
      * @param container If a control is marked control-type='standard', it will receive an empty div element within which it can render its content.
      */
-    public init(context: ComponentFramework.Context<IInputs>, notifyOutputChanged: () => void, state: ComponentFramework.Dictionary, container:HTMLDivElement): void
-    {
-        const ONEDAY = 1000 * 86400 ;
+    public init(
+        context: ComponentFramework.Context<IInputs>,
+        notifyOutputChanged: () => void,
+        state: ComponentFramework.Dictionary,
+        container: HTMLDivElement
+    ): void {
+        const ONEDAY = 1000 * 86400;
         this._context = context;
         this._notifyOutputChanged = notifyOutputChanged;
         this._dateRefreshed = this.dateUpdated.bind(this);
-        this._timeRefreshed  = this.timeUpdated.bind(this);
+        this._timeRefreshed = this.timeUpdated.bind(this);
 
         // To display the control we create and populate a div with a date and time input control and then
         // attach to the "container" element passed in from the environment.
         this._container = document.createElement("div");
-        this._container.setAttribute("class", "form-control dateControlContainer");
+        this._container.setAttribute(
+            "class",
+            "form-control dateControlContainer"
+        );
 
         this.dateInputElement = document.createElement("input");
         this.dateInputElement.setAttribute("type", "date");
@@ -109,7 +116,10 @@ export class SpecificDateTime implements ComponentFramework.StandardControl<IInp
             "max",
             nextMonth.toISOString().split("T")[0]
         );
-        this.dateInputElement.setAttribute("title", context.mode.isControlDisabled ? "disabled" : "enabled");
+        this.dateInputElement.setAttribute(
+            "title",
+            context.mode.isControlDisabled ? "disabled" : "enabled"
+        );
 
         this.timeInputElement = document.createElement("input");
         this.timeInputElement.setAttribute("type", "time");
@@ -117,20 +127,21 @@ export class SpecificDateTime implements ComponentFramework.StandardControl<IInp
         this.timeInputElement.setAttribute("class", "timeControl");
         this.timeInputElement.setAttribute("id", "timeInput");
         this.timeInputElement.setAttribute("data-testid", "time");
-        this.timeInputElement.setAttribute("title", "Enter the time in 24 hour format hh:mm");
+        this.timeInputElement.setAttribute(
+            "title",
+            "Enter the time in 24 hour format hh:mm"
+        );
 
         this._container.appendChild(this.dateInputElement);
         this._container.appendChild(this.timeInputElement);
         container.appendChild(this._container);
     }
 
-
     /**
      * Called when any value in the property bag has changed. This includes field values, data-sets, global values such as container height and width, offline status, control metadata values such as label, visible, etc.
      * @param context The entire property bag available to control via Context Object; It contains values as set up by the customizer mapped to names defined in the manifest, as well as utility functions
      */
-    public updateView(context: ComponentFramework.Context<IInputs>): void
-    {
+    public updateView(context: ComponentFramework.Context<IInputs>): void {
         // Update the date/time value if needed.
         this._context = context;
         if (context.parameters.SpecificDateTimeField.raw) {
@@ -149,21 +160,21 @@ export class SpecificDateTime implements ComponentFramework.StandardControl<IInp
             this._displayedDateValue = this._dateTimeValue;
             this._displayedTimeValue = "";
         }
-        this.dateInputElement.value = this._dateTimeValue?.toISOString().split("T")[0] ?? "";
-        this.timeInputElement.value =  this._displayedTimeValue ?? "";
+        this.dateInputElement.value =
+            this._dateTimeValue?.toISOString().split("T")[0] ?? "";
+        this.timeInputElement.value = this._displayedTimeValue ?? "";
 
         // Deal with control being enabled/disabled.
         this.dateInputElement.readOnly = context.mode.isControlDisabled;
-        this.timeInputElement.readOnly = context.mode.isControlDisabled;        
+        this.timeInputElement.readOnly = context.mode.isControlDisabled;
     }
 
     /**
      * Called by the framework to get the current value of the control.
-     * 
+     *
      * @returns an object based on nomenclature defined in manifest, expecting object[s] for property marked as "bound" or "output"
      */
-    public getOutputs(): IOutputs
-    {
+    public getOutputs(): IOutputs {
         return {
             SpecificDateTimeField: this._dateTimeValue,
         };
@@ -172,8 +183,7 @@ export class SpecificDateTime implements ComponentFramework.StandardControl<IInp
     /**
      * Remove event listers on the date and time controls.
      */
-    public destroy(): void
-    {
+    public destroy(): void {
         this.dateInputElement.removeEventListener("input", this._dateRefreshed);
         this.timeInputElement.removeEventListener("input", this._timeRefreshed);
     }
