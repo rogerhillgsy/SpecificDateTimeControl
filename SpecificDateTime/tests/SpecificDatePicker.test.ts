@@ -5,7 +5,7 @@ import {getByTestId, waitFor} from '@testing-library/dom';
 import  '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 
-test(  'First test ', async () => {
+test(  'Basic Function Test', async () => {
     // Allow us to enter text into the controls.
     userEvent.setup();
 
