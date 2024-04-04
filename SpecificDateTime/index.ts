@@ -43,7 +43,7 @@ export class SpecificDateTime
      * Determine if the parsed date/time value requires an update in the Model driven app stored value.
      */
     private updateDataModel() {
-        this._dateTimeValue = this.composeDateTime();
+        this._dateTimeValue = this.parseDateTime();
         if (this._dateTimeValue != this._lastNotifiedValue) {
             this._lastNotifiedValue = this._dateTimeValue;
             this._notifyOutputChanged(); // Tell the model driven app framework that the control value has changed.
@@ -56,7 +56,7 @@ export class SpecificDateTime
      *
      * @returns currently displayed date (or undefined)
      */
-    private composeDateTime(): Date | undefined {
+    private parseDateTime(): Date | undefined {
         const date = this._displayedDateValue;
         const time = this._displayedTimeValue ?? "";
         const timeParts = time.split(":");
