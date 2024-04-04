@@ -1,4 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 /**
  * Read environment variables from file.
@@ -28,6 +30,12 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+    ignoreHTTPSErrors: true,
+    video: 'on-first-retry',
+    headless: true,
+    baseURL: process.env.environmentUrl,
+    screenshot: 'only-on-failure',
+    ...devices['Desktop Chrome'],
   },
 
   /* Configure projects for major browsers */
@@ -46,7 +54,18 @@ export default defineConfig({
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
     },
-
+    {
+      name: 'setup',
+      testMatch: '**/*.setup.ts'
+    },
+    {
+      name: 'tests',
+      testMatch: '**/*.spec.ts',
+      // dependencies: ['setup'],
+      use: {
+        storageState: process.env.storageState
+      }
+    },
     /* Test against mobile viewports. */
     // {
     //   name: 'Mobile Chrome',
@@ -68,6 +87,8 @@ export default defineConfig({
     // },
   ],
 
+  outputDir: 'test-results/',
+  
   /* Run your local dev server before starting the tests */
   // webServer: {
   //   command: 'npm run start',

@@ -34,8 +34,14 @@ setup("do login", async ({ page, baseURL }) => {
       passwordTextBox.fill(process.env.password!);
       await page.getByRole("button", { name: "Sign In" }).click();
 
+      // The next section is needed if MFA is enabled on your tenant.
+      // await page
+      //   .getByText("Approve a request on my Microsoft Authenticator App")
+      //   .click();
+      // await page.getByText("Yes").click();
+
       await page
-        .getByText("Approve a request on my Microsoft Authenticator App")
+        .getByText("Stay signed in?")
         .click();
       await page.getByText("Yes").click();
 
