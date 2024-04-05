@@ -2,7 +2,8 @@
     "env": {
       "browser": true,
       "es2020": true,
-      "jest" : true
+      "jest" : true,
+      "node" : true
     },
     "extends": [
       "eslint:recommended"
@@ -34,6 +35,10 @@
             "rules": {
                 "@typescript-eslint/no-unused-expressions": "off",
                 "@typescript-eslint/unbound-method": "off"
+            },
+            "env" : {
+              "jest" : true,
+              "jest/globals" : true
             }
         }
     ]
