@@ -13,7 +13,6 @@
     "refreshTypes": "pcf-scripts refreshTypes"
   },
   "devDependencies": {
-    "@azure/identity": "^4.0.1",
     "@microsoft/eslint-plugin-power-apps": "^0.2.6",
     "@playwright/test": "^1.42.1",
     "@testing-library/jest-dom": "^6.4.2",

@@ -35,25 +35,43 @@ export default defineConfig({
     headless: true,
     baseURL: process.env.environmentUrl,
     screenshot: 'only-on-failure',
-    ...devices['Desktop Chrome'],
+    ...devices['Desktop Chrome'],   
   },
+
+  // Timeout on each expect()
+  expect : {
+    timeout: 10 * 1000,
+  },
+  // Overall test timeout. 60s.
+  timeout: 60*1000,
 
   /* Configure projects for major browsers */
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: { ...devices['Desktop Chrome'],
+      storageState: process.env.storageState,
+    },
+      dependencies: ['setup'],
     },
 
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      use: { ...devices['Desktop Firefox'],
+      storageState: process.env.storageState
+    },
+      dependencies: ['setup'],
     },
 
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
+    // There are wide variances between webkit behaviour on the (legacy) windows verion, MacOS and iOS.
+    // Therefore ignore webkit for now.
+    // {
+    //   name: 'webkit',
+    //   use: { ...devices['Desktop Safari'],
+    //   storageState: process.env.storageState
+    // },
+    //   dependencies: ['setup'],
+    // },
     {
       name: 'setup',
       testMatch: '**/*.setup.ts'
@@ -61,10 +79,10 @@ export default defineConfig({
     {
       name: 'tests',
       testMatch: '**/*.spec.ts',
-      // dependencies: ['setup'],
       use: {
         storageState: process.env.storageState
-      }
+      },
+      dependencies: ['setup']
     },
     /* Test against mobile viewports. */
     // {
