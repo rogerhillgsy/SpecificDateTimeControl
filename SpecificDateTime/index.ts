@@ -68,7 +68,7 @@ export class SpecificDateTime
         ) {
             const hours = parseInt(timeParts[0]);
             const minutes = parseInt(timeParts[1]);
-            if (date && hours && minutes) {
+            if (date && hours != undefined && minutes != undefined) {
                 date.setHours(hours);
                 date.setMinutes(minutes);
             }
@@ -147,6 +147,7 @@ export class SpecificDateTime
         if (context.parameters.SpecificDateTimeField.raw) {
             this._dateTimeValue = context.parameters.SpecificDateTimeField.raw!;
             this._displayedDateValue = this._dateTimeValue;
+            this._lastNotifiedValue = this._dateTimeValue;
             this._displayedTimeValue = `${this._dateTimeValue
                 .getHours()
                 .toString()

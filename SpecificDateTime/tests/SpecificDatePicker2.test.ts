@@ -87,9 +87,9 @@ describe( 'Testing SpecificDatePicker functions', () => {
         await waitFor( () => expect( datePicker.getOutputs()).toEqual(  { "SpecificDateTimeField" :  new Date("2024-03-26T15:57") }));
         expect(outputChanged).not.toHaveBeenCalled();
 
-        // Clear the date field. OutputChanges should have been called once and getOutputs() should be returning undefined.
+        // Clear the date field. OutputChanged should have been called once and getOutputs() should be returning undefined.
         await userEvent.clear( getByTestId(container,"date"));
-        expect(outputChanged).not.toHaveBeenCalledTimes(1);
+        expect(outputChanged).toHaveBeenCalledTimes(1);
         expect( datePicker.getOutputs().SpecificDateTimeField).toBeUndefined();
 
         // However, the time field should still have a value, and date should be clear.
