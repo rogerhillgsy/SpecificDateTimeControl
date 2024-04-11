@@ -1,3 +1,4 @@
+// @ts-check
 import { IInputs, IOutputs } from "./generated/ManifestTypes";
 
 export class SpecificDateTime
@@ -26,7 +27,15 @@ export class SpecificDateTime
      * @param evt Update event for date field
      */
     private dateUpdated(evt: Event) {
+        // Ensure that the date is treated as being in the UTC timezone. (Event if the user is not)
         this._displayedDateValue = new Date(this.dateInputElement.value);
+        // if (!isNaN(this._displayedDateValue.getTime())) {
+            // const dateElements = this.dateInputElement.value.split("-");
+            // if (dateElements.length == 3 ) {
+            //     const utCTimestamp = Date.UTC(+dateElements[0], +dateElements[1]-1, +dateElements[2]);
+            //     this._displayedDateValue = new Date(utCTimestamp);
+            // }
+        // }
         this.updateDataModel();
     }
     
@@ -45,7 +54,7 @@ export class SpecificDateTime
     private updateDataModel() {
         this._dateTimeValue = this.parseDateTime();
         if (this._dateTimeValue != this._lastNotifiedValue) {
-            this._lastNotifiedValue = this._dateTimeValue;
+            this._lastNotifiedValue = new Date(this._dateTimeValue!!);
             this._notifyOutputChanged(); // Tell the model driven app framework that the control value has changed.
         }
     }
@@ -147,7 +156,7 @@ export class SpecificDateTime
         if (context.parameters.SpecificDateTimeField.raw) {
             this._dateTimeValue = context.parameters.SpecificDateTimeField.raw!;
             this._displayedDateValue = this._dateTimeValue;
-            this._lastNotifiedValue = this._dateTimeValue;
+            this._lastNotifiedValue = new Date(this._dateTimeValue);
             this._displayedTimeValue = `${this._dateTimeValue
                 .getHours()
                 .toString()
@@ -172,12 +181,18 @@ export class SpecificDateTime
 
     /**
      * Called by the framework to get the current value of the control.
+     * The time returned needs to be adjusted for the locale and the 
      *
      * @returns an object based on nomenclature defined in manifest, expecting object[s] for property marked as "bound" or "output"
      */
     public getOutputs(): IOutputs {
+        let adjustedDate = !this._dateTimeValue ? undefined : new Date(this._dateTimeValue);
+        if (adjustedDate) {
+            let adjustedTimestamp = adjustedDate.getTime() - adjustedDate.getTimezoneOffset()*1000*60;
+            adjustedDate = new Date(adjustedTimestamp);
+        }
         return {
-            SpecificDateTimeField: this._dateTimeValue,
+            SpecificDateTimeField: adjustedDate,
         };
     }
 

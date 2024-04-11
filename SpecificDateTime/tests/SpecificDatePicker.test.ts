@@ -5,7 +5,11 @@ import {getByTestId, waitFor} from '@testing-library/dom';
 import  '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 
-test(  'Basic Function Test', async () => {
+// it.each( ['2024-03-11','2024-04-11'])( '%i should provide basic function', (date) => {
+    
+// })
+
+test.each( ['2024-03-11','2024-04-11'])(  '%s Basic Test', async (date) => {
     // Allow us to enter text into the controls.
     userEvent.setup();
 
@@ -31,8 +35,7 @@ test(  'Basic Function Test', async () => {
 
     // Now type in the date value and check that the date is still undefined.
     await userEvent.click(getByTestId(container,"date"));
-    // userEvent.type(getByTestId(container,"date"), "23042024");
-    await userEvent.type(getByTestId(container,"date"), "2024-04-23");
+    await userEvent.type(getByTestId(container,"date"), date);
     await waitFor( () => expect( datePicker.getOutputs().SpecificDateTimeField).toBeUndefined());
 
     // Type in the time value and check that the control now has a defined value.
@@ -44,5 +47,6 @@ test(  'Basic Function Test', async () => {
     // new Date(xxx) will apply the current timezone to the date literal we specify
     // (which will cause an error unless you are in GMT+0.)
     // Explicity specifying the timezone as "Z" fixes this problem.
-    await waitFor(() => expect( datePicker.getOutputs().SpecificDateTimeField).toEqual(new Date("2024-04-23T12:34Z")));
-})
+    const x = new Date( `${date}T12:34Z`);
+    await waitFor(() => expect( datePicker.getOutputs().SpecificDateTimeField).toEqual(  x)); //new Date( `${date}T12:34Z`)));
+}, 120*1000)
