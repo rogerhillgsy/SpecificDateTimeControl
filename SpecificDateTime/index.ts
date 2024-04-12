@@ -18,6 +18,8 @@ export class SpecificDateTime
     private _dateRefreshed: (this: HTMLInputElement, evt: Event) => any;
     private _timeRefreshed: (this: HTMLInputElement, evt: Event) => any;
 
+    private static readonly TIMESTAMP_MINUTE = 1000*60;
+
     /**
      * Empty constructor.
      */
@@ -153,25 +155,33 @@ export class SpecificDateTime
     public updateView(context: ComponentFramework.Context<IInputs>): void {
         // Update the date/time value if needed.
         this._context = context;
+        let displayedDateString : string = "";
         if (context.parameters.SpecificDateTimeField.raw) {
-            this._dateTimeValue = context.parameters.SpecificDateTimeField.raw!;
-            this._displayedDateValue = this._dateTimeValue;
-            this._lastNotifiedValue = new Date(this._dateTimeValue);
-            this._displayedTimeValue = `${this._dateTimeValue
+            this._dateTimeValue = context.parameters.SpecificDateTimeField.raw;
+            // The timestamp of raw value returned by the framework != the timestamp of the time that getOutput returns. :-(((
+            this._displayedDateValue = new Date( this._dateTimeValue.getTime() + 
+                        ( context.userSettings.getTimeZoneOffsetMinutes(this._dateTimeValue) + 
+                          this._dateTimeValue.getTimezoneOffset())
+                     * SpecificDateTime.TIMESTAMP_MINUTE);
+            this._lastNotifiedValue = new Date(this._displayedDateValue);
+            this._displayedTimeValue = `${this._displayedDateValue
                 .getHours()
                 .toString()
-                .padStart(2, "0")}:${this._dateTimeValue
+                .padStart(2, "0")}:${this._displayedDateValue
                 .getMinutes()
                 .toString()
                 .padStart(2, "0")}`;
+                // We need a ISO format date, but toISOString() applies time zone correction, which is not needed here.
+            displayedDateString = `${this._displayedDateValue.getFullYear()}-${
+                                    (this._displayedDateValue.getMonth() + 1).toString().padStart(2,"0")}-${
+                                    (this._displayedDateValue.getDate()).toString().padStart(2,"0")}`;
         } else {
             // Undefined datetime value. Set to current date with empty time field
             this._dateTimeValue = undefined;
             this._displayedDateValue = this._dateTimeValue;
             this._displayedTimeValue = "";
         }
-        this.dateInputElement.value =
-            this._dateTimeValue?.toISOString().split("T")[0] ?? "";
+        this.dateInputElement.value = displayedDateString;
         this.timeInputElement.value = this._displayedTimeValue ?? "";
 
         // Deal with control being enabled/disabled.
@@ -187,10 +197,11 @@ export class SpecificDateTime
      */
     public getOutputs(): IOutputs {
         let adjustedDate = !this._dateTimeValue ? undefined : new Date(this._dateTimeValue);
-        if (adjustedDate) {
-            let adjustedTimestamp = adjustedDate.getTime() - adjustedDate.getTimezoneOffset()*1000*60;
-            adjustedDate = new Date(adjustedTimestamp);
-        }
+        // if (adjustedDate) {
+        //  //   let adjustedTimestamp = adjustedDate.getTime() - (adjustedDate.getTimezoneOffset() - this._context.userSettings.getTimeZoneOffsetMinutes()) *1000*60;
+        //     let adjustedTimestamp = adjustedDate.getTime() - (adjustedDate.getTimezoneOffset() - this._context.userSettings.getTimeZoneOffsetMinutes()) *1000*60;
+        //     adjustedDate = new Date(adjustedTimestamp);
+        // }
         return {
             SpecificDateTimeField: adjustedDate,
         };

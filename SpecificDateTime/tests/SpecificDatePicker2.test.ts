@@ -46,6 +46,7 @@ describe( 'Testing SpecificDatePicker functions', () => {
         expect( datePicker.getOutputs().SpecificDateTimeField).toBeUndefined();
 
         // Set the time - the output should now be defined, and outputChanges should have been called.
+        expect(outputChanged).toHaveBeenCalledTimes(0);
         await userEvent.type(  getByTestId(container,"time"), '12:34');
         expect( datePicker.getOutputs()).toEqual(  { "SpecificDateTimeField" :  new Date( "2024-02-28T12:34")});
         expect(outputChanged).toHaveBeenCalledTimes(1);
