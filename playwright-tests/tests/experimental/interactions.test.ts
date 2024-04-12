@@ -24,7 +24,9 @@ test( "Create new Interaction with day > 12", async( {page}) => {
     await createInteractionWithDate(page, new Date("2024-02-28T00:08"));
 });
 
-async function createInteractionWithDate(page: any, testdate: Date): Promise<void> {
+//test. .each(["2024-03-02T12:34","2024-04-05T23:56","2024-02-28T00:08"])("%s Create new interaction", (interactionDate: string) => {
+ async function createInteractionWithDate(page: any, testdate: Date): Promise<void> {
+//    const testdate = new Date(interactionDate);
     const dateText = `${testdate.getDate()}/${testdate.getMonth()+1}/${testdate.getFullYear()}`;
     const localeDateText = dateText.replace("/", "-");
     const dateSequence = dateText.replace("/", "");

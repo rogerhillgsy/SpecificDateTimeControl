@@ -5,9 +5,6 @@ import {getByTestId, waitFor} from '@testing-library/dom';
 import  '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 
-// it.each( ['2024-03-11','2024-04-11'])( '%i should provide basic function', (date) => {
-    
-// })
 
 test.each( ['2024-03-11','2024-04-11'])(  '%s Basic Test', async (date) => {
     // Allow us to enter text into the controls.
@@ -40,12 +37,10 @@ test.each( ['2024-03-11','2024-04-11'])(  '%s Basic Test', async (date) => {
 
     // Type in the time value and check that the control now has a defined value.
     await userEvent.click(getByTestId(container,"time"));
-    // userEvent.type(getByTestId(container,"time"), "1234");
     await userEvent.type(getByTestId(container,"time"), "12:34");
 
     // Note that the testing-library framework is operating without a specific locale. 
-    // new Date(xxx) will apply the current timezone to the date literal we specify
-    // (which will cause an error unless you are in GMT+0.)
-    // Explicity specifying the timezone as "Z" fixes this problem.
+    // The JS Date functions will all use the system locale. You can make sure this doesn't affect anything
+    // By changing your locale manually, but these seems to be no easy way to 
     await waitFor(() => expect( datePicker.getOutputs().SpecificDateTimeField).toEqual( new Date( `${date}T12:34`)));
-}, 120*1000)
+}, 120*1000); // Timeout
