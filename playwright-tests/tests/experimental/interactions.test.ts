@@ -27,9 +27,9 @@ test( "Create new Interaction with day > 12", async( {page}) => {
 //test. .each(["2024-03-02T12:34","2024-04-05T23:56","2024-02-28T00:08"])("%s Create new interaction", (interactionDate: string) => {
  async function createInteractionWithDate(page: any, testdate: Date): Promise<void> {
 //    const testdate = new Date(interactionDate);
-    const dateText = `${testdate.getDate()}/${testdate.getMonth()+1}/${testdate.getFullYear()}`;
-    const localeDateText = dateText.replace("/", "-");
-    const dateSequence = dateText.replace("/", "");
+    const dateText = `${testdate.getDate().toString().padStart(2,"0")}/${(testdate.getMonth()+1).toString().padStart(2,"0")}/${testdate.getFullYear()}`;
+    const localeDateText = dateText.replaceAll("/", "-");
+    const dateSequence = dateText.replaceAll("/", "");
     const [isoDate, isoTime] = testdate.toISOString().split("T");
     const timeText = `${testdate.getHours().toString().padStart(2,"0")}:${testdate.getMinutes().toString().padStart(2,"0")}`;
 
@@ -65,12 +65,14 @@ test( "Create new Interaction with day > 12", async( {page}) => {
     // Simualte direct typing of date as unbroken string of numbers. 
     await page.getByTestId("date").focus();
     await page.getByTestId("date").pressSequentially(dateSequence, { delay: 300 });
+    await expect(page.getByLabel("Date of Interaction Date OOB", { exact: true })).toBeEmpty();
+    await expect(page.getByLabel("Time of Interaction Date OOB", { exact: true })).not.toBeVisible();
+    await page.getByTestId("time").focus();
+    await page.getByTestId("time").pressSequentially(timeText, { delay: 200 });
+    await page.getByTestId("time").focus(false);
+
     await expect(page.getByLabel("Date of Interaction Date OOB", { exact: true })).not.toBeEmpty();
     await expect(page.getByLabel("Time of Interaction Date OOB", { exact: true })).toBeVisible();
-    await expect(page.getByLabel("Time of Interaction Date OOB", { exact: true })).not.toBeEmpty();
-    await expect(page.getByTestId("date")).not.toBeEmpty();
-    await expect(page.getByTestId("date")).toHaveValue(localeDateText);
-    await expect(page.getByTestId("time")).not.toBeEmpty();
-    await expect(page.getByTestId("time")).toHaveValue(isoTime);
-
+    await expect(page.getByLabel("Date of Interaction Date OOB", { exact: true })).toHaveValue(dateText);
+    await expect(page.getByLabel("Time of Interaction Date OOB", { exact: true })).toHaveValue(timeText);
 }
