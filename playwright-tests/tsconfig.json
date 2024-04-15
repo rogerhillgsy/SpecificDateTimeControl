@@ -5,6 +5,9 @@
         "baseUrl": ".",
         "paths": { 
             "@base/*" : ["./tests/base/*"]
-        }
+        },
+        "lib": [ 
+            "ES2021.String"
+        ]
     }
 }

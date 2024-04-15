@@ -62,6 +62,10 @@ export default defineConfig({
     },
       dependencies: ['setup'],
     },
+    {
+      name: 'All',
+      dependencies: ['chromium', 'firefox']
+    },
 
     // There are wide variances between webkit behaviour on the (legacy) windows verion, MacOS and iOS.
     // Therefore ignore webkit for now.

@@ -39,21 +39,19 @@ test( "Create new Interaction with day > 12", async( {page}) => {
     await page.getByText("Interactions", { exact: true }).click();
     await page.getByLabel("New", { exact: true }).click();
     await expect(page).toHaveTitle(/Interaction: Form 2: New Interaction -( Power Apps)?/);
-    // await page.getByRole('tab', { name: 'Copilot' }).click(); // Get rid ofr copilot.
+    await page.getByRole('tab', { name: 'Copilot' }).click(); // Get rid ofr copilot.
+
     await page.getByLabel("Account, Lookup", { exact: true }).fill("fullers");
     await page.getByLabel("Fullers").click();
 
     // Fill in OOB date
     await expect(page.getByLabel("Time of Interaction Date OOB", { exact: true })).not.toBeVisible();
     await page.getByLabel("Date of Interaction Date OOB", { exact: true }).fill(dateText); // '03/02/2024');
-    await page.getByLabel("Date of Interaction Date OOB", { exact: true }).press("Tab");
+    await page.keyboard.press("Tab");
     await expect(page.getByLabel("Time of Interaction Date OOB", { exact: true })).toBeVisible();
     await expect(page.getByLabel("Time of Interaction Date OOB", { exact: true })).toHaveValue("08:00");
     await expect(page.getByTestId("date")).toHaveValue(isoDate);
     await expect(page.getByTestId("time")).toHaveValue("08:00");
-
-    // Get rid of copilot tab.
-    await page.getByRole("tab", { name: "Copilot" }).click();
 
     // Clear the specific date and check everything clears.
     await page.getByTestId("date").clear();
@@ -69,7 +67,7 @@ test( "Create new Interaction with day > 12", async( {page}) => {
     await expect(page.getByLabel("Time of Interaction Date OOB", { exact: true })).not.toBeVisible();
     await page.getByTestId("time").focus();
     await page.getByTestId("time").pressSequentially(timeText, { delay: 200 });
-    await page.getByTestId("time").focus(false);
+    await page.keyboard.press("Tab");
 
     await expect(page.getByLabel("Date of Interaction Date OOB", { exact: true })).not.toBeEmpty();
     await expect(page.getByLabel("Time of Interaction Date OOB", { exact: true })).toBeVisible();
