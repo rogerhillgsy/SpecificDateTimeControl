@@ -7,6 +7,9 @@ export class SpecificDateTime implements ComponentFramework.StandardControl<IInp
     private _dateTimeValue?: Date;
     private _lastNotifiedValue?: Date;
 
+    private _earliestDate?: Date;
+    private _latestDate?: Date;
+
     private _notifyOutputChanged: () => void;
 
     private dateInputElement: HTMLInputElement;
@@ -23,35 +26,26 @@ export class SpecificDateTime implements ComponentFramework.StandardControl<IInp
      */
     constructor() {}
     /**
-     * Utility function to provide a  promise that "debounces" user entered time input.
+     * Utility function to provide a promise that "debounces" user entered time input.
      * @param ms
      * @returns
      */
-    private debouncer = ((delay : number) : () => Promise<void> => {
-        let timeout : number | undefined = undefined;
+    private debouncer = ((delay: number): (() => Promise<void>) => {
+        let timeout: number | undefined = undefined;
         return () => {
             if (timeout) {
                 window.clearTimeout(timeout);
             }
             return new Promise((resolve) => {
                 timeout = window.setTimeout(resolve, delay);
-            } );
+            });
         };
-    }) (300);
+    })(300);
     /**
      * called on UI updates to the date input field.
      * @param evt Update event for date field
      */
     private dateUpdated(evt: Event) {
-        // Ensure that the date is treated as being in the UTC timezone. (Event if the user is not)
-        this._displayedDateValue = new Date(this.dateInputElement.value);
-        // if (!isNaN(this._displayedDateValue.getTime())) {
-        // const dateElements = this.dateInputElement.value.split("-");
-        // if (dateElements.length == 3 ) {
-        //     const utCTimestamp = Date.UTC(+dateElements[0], +dateElements[1]-1, +dateElements[2]);
-        //     this._displayedDateValue = new Date(utCTimestamp);
-        // }
-        // }
         this.updateDataModel();
     }
 
@@ -60,11 +54,10 @@ export class SpecificDateTime implements ComponentFramework.StandardControl<IInp
      * @param evt Update event for the time field
      */
     private timeUpdated(evt: Event) {
-        this._displayedTimeValue = this.timeInputElement.value as any as string;
+        this._displayedTimeValue = this.timeInputElement.value; // as any as string;
         // Debounce the entry of time so that the user can enter the time in a more natural way
-        this.timeUpdatePromise = this.debouncer().then(() => this.updateDataModel())
+        this.debouncer().then(() => this.updateDataModel());
     }
-    private timeUpdatePromise: Promise<void>;
 
     /**
      * Determine if the parsed date/time value requires an update in the Model driven app stored value.
@@ -79,25 +72,30 @@ export class SpecificDateTime implements ComponentFramework.StandardControl<IInp
 
     /**
      * Try to parse the date and time fields into a valid value.
-     * If the full date and time cannot be parse, return undefined.
+     * If the full date and time cannot be parsed, return undefined.
+     * We need to be quite careful here to construct the date as entered by the user. This will give us a "point in time"
+     * that is correct (from the user's point of view).
      *
      * @returns currently displayed date (or undefined)
      */
     private parseDateTime(): Date | undefined {
-        const date = this._displayedDateValue;
-        const time = this._displayedTimeValue ?? "";
-        const timeParts = time.split(":");
-        if (date && !isNaN(date.getTime()) && timeParts.length == 2 && date.getFullYear() >= 2023) {
-            const hours = parseInt(timeParts[0]);
-            const minutes = parseInt(timeParts[1]);
-            if (date && hours != undefined && minutes != undefined) {
-                date.setHours(hours);
-                date.setMinutes(minutes);
+        if (this.dateInputElement.value && this.timeInputElement.value) {
+            const dateParts = this.dateInputElement.value ? this.dateInputElement.value.split("-") : undefined;
+            const timeParts = this.timeInputElement.value.split(":");
+            if (dateParts && dateParts.length == 3 && timeParts && timeParts.length == 2) {
+                const date = new Date(+dateParts[0], +dateParts[1] - 1, +dateParts[2], +timeParts[0], +timeParts[1]);
+                if (
+                    (!this._earliestDate || date >= this._earliestDate) &&
+                    (!this._latestDate || date <= this._latestDate)
+                ) {
+                    return date;
+                }
+                return undefined;
             }
-            return date;
         }
         return undefined;
     }
+
     /**
      * Used to initialize the control instance. Controls can kick off remote server calls and other initialization actions here.
      * Data-set values are not initialized here, use updateView.
@@ -117,6 +115,9 @@ export class SpecificDateTime implements ComponentFramework.StandardControl<IInp
         this._notifyOutputChanged = notifyOutputChanged;
         this._dateRefreshed = this.dateUpdated.bind(this);
         this._timeRefreshed = this.timeUpdated.bind(this);
+
+        this._earliestDate = context.parameters.MinDate?.raw ?? undefined;
+        this._latestDate = context.parameters.MaxDate?.raw ?? undefined;
 
         // To display the control we create and populate a div with a date and time input control and then
         // attach to the "container" element passed in from the environment.
@@ -190,17 +191,14 @@ export class SpecificDateTime implements ComponentFramework.StandardControl<IInp
 
     /**
      * Called by the framework to get the current value of the control.
-     * The time returned needs to be adjusted for the locale and the
+     * The date time value returned to the CRM framework is correct for the user's locale.
+     * Note that the value we get back from the CRM framework in UpdateView will have been adjusted for the user's locale and
+     * any CRM date time settings, so may be quite different(!)
      *
      * @returns an object based on nomenclature defined in manifest, expecting object[s] for property marked as "bound" or "output"
      */
     public getOutputs(): IOutputs {
         let adjustedDate = !this._dateTimeValue ? undefined : new Date(this._dateTimeValue);
-        // if (adjustedDate) {
-        //  //   let adjustedTimestamp = adjustedDate.getTime() - (adjustedDate.getTimezoneOffset() - this._context.userSettings.getTimeZoneOffsetMinutes()) *1000*60;
-        //     let adjustedTimestamp = adjustedDate.getTime() - (adjustedDate.getTimezoneOffset() - this._context.userSettings.getTimeZoneOffsetMinutes()) *1000*60;
-        //     adjustedDate = new Date(adjustedTimestamp);
-        // }
         return {
             SpecificDateTimeField: adjustedDate,
         };

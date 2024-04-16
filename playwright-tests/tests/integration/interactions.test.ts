@@ -2,9 +2,13 @@
 // @ts-check
 import { test, expect } from "@playwright/test";
 
+// test.use({
+//     locale: "en-GB",
+//     timezoneId: "Europe/London",
+// });
 test.use({
-    locale: "en-GB",
-    timezoneId: "Europe/London",
+    locale: "en-US",
+    timezoneId: "US/Eastern",
 });
 
 test("Open Interaction App", async ({ page }) => {
@@ -24,9 +28,7 @@ test( "Create new Interaction with day > 12", async( {page}) => {
     await createInteractionWithDate(page, new Date("2024-02-28T00:08"));
 });
 
-//test. .each(["2024-03-02T12:34","2024-04-05T23:56","2024-02-28T00:08"])("%s Create new interaction", (interactionDate: string) => {
  async function createInteractionWithDate(page: any, testdate: Date): Promise<void> {
-//    const testdate = new Date(interactionDate);
     const dateText = `${testdate.getDate().toString().padStart(2,"0")}/${(testdate.getMonth()+1).toString().padStart(2,"0")}/${testdate.getFullYear()}`;
     const localeDateText = dateText.replaceAll("/", "-");
     const dateSequence = dateText.replaceAll("/", "");
@@ -39,7 +41,7 @@ test( "Create new Interaction with day > 12", async( {page}) => {
     await page.getByText("Interactions", { exact: true }).click();
     await page.getByLabel("New", { exact: true }).click();
     await expect(page).toHaveTitle(/Interaction: Form 2: New Interaction -( Power Apps)?/);
-    await page.getByRole('tab', { name: 'Copilot' }).click(); // Get rid ofr copilot.
+    await page.getByRole('tab', { name: 'Copilot' }).click(); // Get rid of copilot.
 
     await page.getByLabel("Account, Lookup", { exact: true }).fill("fullers");
     await page.getByLabel("Fullers").click();
@@ -60,7 +62,7 @@ test( "Create new Interaction with day > 12", async( {page}) => {
     await expect(page.getByTestId("date")).toBeEmpty();
     await expect(page.getByTestId("time")).toBeEmpty();
 
-    // Simualte direct typing of date as unbroken string of numbers. 
+    // Simulate direct typing of date as unbroken string of numbers. 
     await page.getByTestId("date").focus();
     await page.getByTestId("date").pressSequentially(dateSequence, { delay: 300 });
     await expect(page.getByLabel("Date of Interaction Date OOB", { exact: true })).toBeEmpty();
