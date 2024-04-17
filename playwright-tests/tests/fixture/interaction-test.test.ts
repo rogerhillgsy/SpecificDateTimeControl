@@ -1,5 +1,9 @@
+import { isNullOrUndefined } from "util";
 import { test, expect } from "./interaction-fixture";
 
+/**
+ * List of locales we will test with.
+ */
 const locales = [
     { locale: "en-US", timezoneId: "America/New_York" },
     { locale: "en-GB", timezoneId: "Europe/London" },
@@ -11,7 +15,6 @@ const locales = [
 for (const locale of locales) {
     {
         test.describe(
-            locale.timezoneId +
                 `${locale.timezoneId} timezone - Test data transfer between OOB date control and specific control and vice versa.`,
             () => {
                 test.use(locale);
@@ -24,13 +27,30 @@ for (const locale of locales) {
                     // Set OOB date and expect specific date to have same value
                     await interactionPage.setOOBDate("17/02/2024", "12:30");
                     await interactionPage.assertSpecificDate("2024-02-17", "12:30");
+                    // Clear OOB date and check that specific date field is cleared.
+                    await interactionPage.setOOBDate("", "");
+                    await interactionPage.assertSpecificDate("", "");
                 });
 
                 test(`Specific date control to OOB`, async ({ interactionPage, page }) => {
                     await interactionPage.setSpecificDate("12042024", "00:30");
                     await interactionPage.assertOOBDate("12/04/2024", "00:30");
+                    // Clear specific date and check that OOB date field is cleared.
+                    await interactionPage.setSpecificDate("", "");
+                    await interactionPage.assertOOBDate("", "");
                 });
-            }
+
+                test('Partial specific date not valid', async({interactionPage, page}) =>{
+                    await interactionPage.setSpecificDate("12042024", undefined);
+                    await interactionPage.assertOOBDate( undefined, undefined);
+    
+                })
+                test('Partial OOB date is valid', async({interactionPage, page}) =>{
+                    await interactionPage.setOOBDate("17/02/2024", undefined                    );
+                    await interactionPage.assertSpecificDate("2024-02-17", "08:00");
+    
+                })
+                }
         );
     }
 }

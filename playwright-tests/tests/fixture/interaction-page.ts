@@ -1,6 +1,9 @@
 import type { Page, Locator } from "@playwright/test";
 import { expect } from "@playwright/test";
 
+/**
+ * Class that encapsulates the UI setup and interactions with the New Interaction form.
+ */
 export class InteractionPage {
     constructor(public readonly page: Page) {}
 
