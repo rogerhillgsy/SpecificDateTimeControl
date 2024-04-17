@@ -1,4 +1,5 @@
 import { test as base } from '@playwright/test';
+import { InteractionPage } from './interaction-page';
 
 // // Extend basic test by providing a "todoPage" fixture.
 // const test = base.extend<{ todoPage: TodoPage }>({
