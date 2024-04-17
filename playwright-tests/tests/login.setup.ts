@@ -1,10 +1,4 @@
 import { chromium, FullConfig, test as setup } from "@playwright/test";
-// import {
-//   ChainedTokenCredential,
-//   AzureCliCredential,
-//   AzurePowerShellCredential,
-//   ManagedIdentityCredential,
-// } from "@azure/identity";
 import {existsSync} from "fs";
 
 // Log in to CRM.

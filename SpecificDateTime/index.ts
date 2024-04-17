@@ -1,6 +1,12 @@
 // @ts-check
 import { IInputs, IOutputs } from "./generated/ManifestTypes";
 
+/**
+ * The specific Date Time PCF control performs a similar function to the Out of the Box date time control 
+ * in model driven apps.
+ * The main difference is that it will not automatically fill the a time component to a default value of "08:00" when the date has been entered.
+ * Instead the time value must be entered explicity.
+ */
 export class SpecificDateTime implements ComponentFramework.StandardControl<IInputs, IOutputs> {
     private _displayedDateValue?: Date;
     private _displayedTimeValue?: string;
@@ -40,7 +46,7 @@ export class SpecificDateTime implements ComponentFramework.StandardControl<IInp
                 timeout = window.setTimeout(resolve, delay);
             });
         };
-    })(300);
+    })(300); // Allow pause of up to 300ms between keystrokes swhen entering time values.
     /**
      * called on UI updates to the date input field.
      * @param evt Update event for date field
@@ -150,6 +156,10 @@ export class SpecificDateTime implements ComponentFramework.StandardControl<IInp
 
     /**
      * Called when any value in the property bag has changed. This includes field values, data-sets, global values such as container height and width, offline status, control metadata values such as label, visible, etc.
+     * 
+     * Note that we need to be very careful here with the date value returned from the PCF framework. This will **not** be the same as the one we returned from getOutputs().
+     * It needs to be adjusted by the CRM user's timezone offset and the locale timezone offset before we try to use it in the control.
+     * 
      * @param context The entire property bag available to control via Context Object; It contains values as set up by the customizer mapped to names defined in the manifest, as well as utility functions
      */
     public updateView(context: ComponentFramework.Context<IInputs>): void {
@@ -191,8 +201,8 @@ export class SpecificDateTime implements ComponentFramework.StandardControl<IInp
 
     /**
      * Called by the framework to get the current value of the control.
-     * The date time value returned to the CRM framework is correct for the user's locale.
-     * Note that the value we get back from the CRM framework in UpdateView will have been adjusted for the user's locale and
+     * The date time value returned to the CRM framework will be correct for the user's locale.
+     * Note that the value we get back from the CRM framework in UpdateView() will have been adjusted for the user's locale and
      * any CRM date time settings, so may be quite different(!)
      *
      * @returns an object based on nomenclature defined in manifest, expecting object[s] for property marked as "bound" or "output"

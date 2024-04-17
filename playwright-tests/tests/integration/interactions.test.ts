@@ -2,10 +2,11 @@
 // @ts-check
 import { test, expect } from "@playwright/test";
 
-// test.use({
-//     locale: "en-GB",
-//     timezoneId: "Europe/London",
-// });
+/**
+ * Not using a fixture.
+ * Test of the CRM UI Interactions page and specific/OOB dates.
+ */
+
 test.use({
     locale: "en-US",
     timezoneId: "US/Eastern",

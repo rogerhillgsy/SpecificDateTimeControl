@@ -6,6 +6,7 @@ export const test = base.extend<{ interactionPage: InteractionPage }>({
     interactionPage: async ({ page}, use)=> {
     const interactionPage = new InteractionPage(page);
     await interactionPage.goto();
+    
     // Execute the test(...,()=>{}) function with the interactionPage that we have just set up.
     await use(interactionPage);
   },

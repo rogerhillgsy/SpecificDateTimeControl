@@ -5,6 +5,10 @@ import {screen, getByTestId, waitFor } from '@testing-library/dom';
 import  '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 
+/**
+ * Very similar to SpecificDatePicker2.test, but split out as the testing library seems to have
+ * problems with side-effects between different tests.
+ */
 describe( 'Testing Clearing the SpecificDatePicker', () => {
     const rbh_interactionId = "20000000-14fb-4fcb-93ea-bf3a7e0bdc25";
 
