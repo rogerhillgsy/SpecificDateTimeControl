@@ -9,15 +9,16 @@ export class InteractionPage {
 
     async goto() {
         await this.page.goto(`${process.env.environmentUrl}/${process.env.testApp}`);
-        await expect(this.page).toHaveTitle(/Accounts My Active Accounts -( Power Apps)?/);
+        await expect(this.page).toHaveTitle(/Accounts My Active Accounts -( Power Apps)?/, { timeout: 30000});
 
         await this.page.getByText("Interactions", { exact: true }).click();
-        await this.page.getByLabel("New", { exact: true }).click();
-        await expect(this.page).toHaveTitle(/Interaction: Form 2: New Interaction -( Power Apps)?/);
+        await this.page.getByLabel("New", { exact: true, timeout: 20000 }).click();
+        await expect(this.page).toHaveTitle(/Interaction: Form 2: New Interaction -( Power Apps)?/,  { timeout: 30000});
         await this.page.getByRole("tab", { name: "Copilot" }).click(); // Get rid of copilot.
 
-        await this.page.getByLabel("Account, Lookup", { exact: true }).fill("fullers");
-        await this.page.getByLabel("Fullers").click();
+        // Don't really need to set the account on New forms.
+        // await this.page.getByLabel("Account, Lookup", { exact: true }).fill("fullers");
+        // await this.page.getByLabel("Fullers").click();
     }
 
     async setOOBDate(date?: string, time?: string) {
@@ -25,6 +26,7 @@ export class InteractionPage {
             await this.page.getByLabel("Date of Interaction Date OOB", { exact: true }).fill(date); 
         } else {
             await this.page.getByLabel("Date of Interaction Date OOB", { exact: true }).fill(""); 
+            await this.page.getByLabel("Date of Interaction Date OOB", { exact: true }).press("Tab");
         }
         this.page.keyboard.press("Tab");
 
@@ -67,7 +69,7 @@ export class InteractionPage {
         if (date) {
             await expect(this.page.getByTestId("date")).toHaveValue(date);
         } else {
-            await expect(this.page.getByTestId("date")).toBeEmpty();
+            await expect(this.page.getByTestId("date")).    toBeEmpty();
         }
         if (time) {
             await expect(this.page.getByTestId("time")).toHaveValue(time);

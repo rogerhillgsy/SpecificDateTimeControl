@@ -1,8 +1,9 @@
 import { chromium, FullConfig, test as setup } from "@playwright/test";
 import {existsSync} from "fs";
 
-// Log in to CRM.
-// Will require manual intervention for MFA.
+// Log in to CRM (if required) and save the browser state to a .state file.
+// If the .state already exists, use that instead of trying to log in.
+// Will require/allow manual intervention for MFA.
 //
 setup("do login", async ({ page, baseURL }) => {
   //if there is any issue use chromium.launch({ headless: false })
