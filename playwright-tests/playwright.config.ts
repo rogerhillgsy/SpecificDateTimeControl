@@ -40,10 +40,10 @@ export default defineConfig({
 
     // Timeout on each expect()
     expect: {
-        timeout: 10 * 1000,
+        timeout: 15 * 1000,
     },
     // Overall test timeout. 60s.
-    timeout: 90 * 1000,
+    timeout: 60 * 1000,
 
     /* Configure projects for major browsers */
     projects: [
@@ -57,10 +57,11 @@ export default defineConfig({
             name: "firefox",
             use: { ...devices["Desktop Firefox"], storageState: process.env.storageState },
             dependencies: ["setup"],
+            workers: 1
         },
         {
             name: "All",
-            dependencies: ["chromium", "firefox"],
+            dependencies: ["chromium", "firefox","Microsoft Edge","Google Chrome"],
         },
 
         // There are wide variances between webkit behaviour on the (legacy) windows verion, MacOS and iOS.
