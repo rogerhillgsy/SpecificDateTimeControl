@@ -40,7 +40,7 @@ export default defineConfig({
 
     // Timeout on each expect()
     expect: {
-        timeout: 15 * 1000,
+        timeout: 10 * 1000,
     },
     // Overall test timeout. 60s.
     timeout: 60 * 1000,
