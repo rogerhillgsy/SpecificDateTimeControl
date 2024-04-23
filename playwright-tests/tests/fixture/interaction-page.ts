@@ -15,6 +15,7 @@ export class InteractionPage {
         // FF: 
 
         await this.page.getByText("Interactions", { exact: true }).click();
+        await this.page.getByRole('button', { name: 'Active Interactions' }).waitFor({ state : "visible"});
         await this.page.getByLabel("Account Interactions").waitFor();
         await this.page.getByLabel("New", { exact: true }).click();
         await expect(this.page).toHaveTitle(/Interaction: Form 2: New Interaction -( Power Apps)?/, { timeout: 30000 });
