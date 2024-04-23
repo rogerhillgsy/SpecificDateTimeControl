@@ -32,10 +32,10 @@ The Microsoft PCF control tutorial from [here](https://learn.microsoft.com/en-us
 The commands below should be sufficient to build and deploy your PCF control to the current "pcf org who" environment
 |**command**|**Description**|
 |--|--|
+|ControlManifest.Input.xml|Make sure to increase the control version number so that changes appear in CRM|
 |dotnet build|Use in Tagging solution directory to build the solution ready for deployment|
 |pac solution import|Use in TaggingSolution subdirectory. Update the control in CRM. |
 |pac solution publish| Publish the unmanaged solution |
-|Changes to ControlManifest.Input.xml|Make sure to increase the control version number so that changes appear in CRM|
 
 # Debugging with Fiddler.
 
