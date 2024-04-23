@@ -5,7 +5,8 @@ import {getByTestId, waitFor} from '@testing-library/dom';
 import  '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 
-test(  'Basic Function Test', async () => {
+
+test.each( ['2024-03-11','2024-04-11'])(  '%s Basic Test', async (date) => {
     // Allow us to enter text into the controls.
     userEvent.setup();
 
@@ -31,13 +32,15 @@ test(  'Basic Function Test', async () => {
 
     // Now type in the date value and check that the date is still undefined.
     await userEvent.click(getByTestId(container,"date"));
-    // userEvent.type(getByTestId(container,"date"), "23042024");
-    await userEvent.type(getByTestId(container,"date"), "2024-04-23");
+    await userEvent.type(getByTestId(container,"date"), date);
     await waitFor( () => expect( datePicker.getOutputs().SpecificDateTimeField).toBeUndefined());
 
     // Type in the time value and check that the control now has a defined value.
     await userEvent.click(getByTestId(container,"time"));
-    // userEvent.type(getByTestId(container,"time"), "1234");
     await userEvent.type(getByTestId(container,"time"), "12:34");
-    await waitFor(() => expect( datePicker.getOutputs().SpecificDateTimeField).toEqual(new Date("2024-04-23T12:34")));
-})
+
+    // Note that the testing-library framework is operating without a specific locale. 
+    // The JS Date functions will all use the system locale. You can make sure this doesn't affect anything
+    // By changing your locale manually, but these seems to be no easy way to 
+    await waitFor(() => expect( datePicker.getOutputs().SpecificDateTimeField).toEqual( new Date( `${date}T12:34`)));
+}, 120*1000); // Timeout
