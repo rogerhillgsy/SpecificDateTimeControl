@@ -40,7 +40,12 @@ for (const locale of locales) {
          * Setting the specific date control will update the OOB control correctly.
          */
         test(`Specific date control to OOB`, async ({ interactionPage, page }) => {
-            await interactionPage.setSpecificDate("12042024", "00:30");
+            // Construct date according to the rules of the current locale.
+            var testDateTime = new Date(2024,3,12,0,30);
+            var localeDate = testDateTime.toLocaleDateString().replace(/\//g,"");
+            var localeTime = testDateTime.toLocaleTimeString( undefined, { "hour" : "2-digit", "minute" : "2-digit"}).replace(" ","");
+
+            await interactionPage.setSpecificDate( localeDate, localeTime );//"12042024", "00:30");
             await interactionPage.assertOOBDate("12/04/2024", "00:30");
             // Clear specific date and check that OOB date field is cleared.
             await interactionPage.setSpecificDate("", "");

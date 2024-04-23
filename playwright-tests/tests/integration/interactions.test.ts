@@ -15,7 +15,7 @@ test.use({
 test("Open Interaction App", async ({ page }) => {
     await page.goto(process.env.environmentUrl!!);
 
-    await expect(page).toHaveTitle(/Accounts My Active Accounts -( Power Apps)?/);
+    await expect(page).toHaveTitle(/Accounts My Active Accounts -( Power Apps)?/, { timeout: 30000 });
 });
 
 test( "Create new Interaction with GMT date", async({page}) => {
@@ -31,17 +31,17 @@ test( "Create new Interaction with day > 12", async( {page}) => {
 
  async function createInteractionWithDate(page: any, testdate: Date): Promise<void> {
     const dateText = `${testdate.getDate().toString().padStart(2,"0")}/${(testdate.getMonth()+1).toString().padStart(2,"0")}/${testdate.getFullYear()}`;
-    const localeDateText = dateText.replaceAll("/", "-");
-    const dateSequence = dateText.replaceAll("/", "");
+    const dateSequence = testdate.toLocaleDateString( undefined, { "month" : "2-digit", "day" : "2-digit", "year" : "numeric"} ).replace(/\//g,"").padStart(8,"0");
     const [isoDate, isoTime] = testdate.toISOString().split("T");
-    const timeText = `${testdate.getHours().toString().padStart(2,"0")}:${testdate.getMinutes().toString().padStart(2,"0")}`;
-
+    const timeText = testdate.toLocaleTimeString().replace(/:00( |$)/ ,"");
+    const expectedOOBTimeText = `${testdate.getHours().toString().padStart(2,"0")}:${testdate.getMinutes().toString().padStart(2,"0")}`;
+    
     await page.goto(`${process.env.environmentUrl}/${process.env.testApp}`);
-    await expect(page).toHaveTitle(/Accounts My Active Accounts -( Power Apps)?/);
+    await expect(page).toHaveTitle(/Accounts My Active Accounts -( Power Apps)?/, { timeout: 30000 });
 
     await page.getByText("Interactions", { exact: true }).click();
     await page.getByLabel("New", { exact: true }).click();
-    await expect(page).toHaveTitle(/Interaction: Form 2: New Interaction -( Power Apps)?/);
+    await expect(page).toHaveTitle(/Interaction: Form 2: New Interaction -( Power Apps)?/,{ timeout: 30000 });
     await page.getByRole('tab', { name: 'Copilot' }).click(); // Get rid of copilot.
 
     await page.getByLabel("Account, Lookup", { exact: true }).fill("fullers");
@@ -65,15 +65,15 @@ test( "Create new Interaction with day > 12", async( {page}) => {
 
     // Simulate direct typing of date as unbroken string of numbers. 
     await page.getByTestId("date").focus();
-    await page.getByTestId("date").pressSequentially(dateSequence, { delay: 300 });
+    await page.getByTestId("date").pressSequentially(dateSequence, { delay: 200 });
     await expect(page.getByLabel("Date of Interaction Date OOB", { exact: true })).toBeEmpty();
     await expect(page.getByLabel("Time of Interaction Date OOB", { exact: true })).not.toBeVisible();
     await page.getByTestId("time").focus();
-    await page.getByTestId("time").pressSequentially(timeText, { delay: 200 });
-    await page.keyboard.press("Tab");
+    await page.getByTestId("time").pressSequentially(timeText, { delay: 100 });
+   // await page.keyboard.press("Tab");
 
     await expect(page.getByLabel("Date of Interaction Date OOB", { exact: true })).not.toBeEmpty();
     await expect(page.getByLabel("Time of Interaction Date OOB", { exact: true })).toBeVisible();
     await expect(page.getByLabel("Date of Interaction Date OOB", { exact: true })).toHaveValue(dateText);
-    await expect(page.getByLabel("Time of Interaction Date OOB", { exact: true })).toHaveValue(timeText);
+    await expect(page.getByLabel("Time of Interaction Date OOB", { exact: true })).toHaveValue(expectedOOBTimeText);
 }

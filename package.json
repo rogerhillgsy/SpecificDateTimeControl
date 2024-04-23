@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "@microsoft/eslint-plugin-power-apps": "^0.2.6",
-    "@playwright/test": "^1.42.1",
+    "@playwright/test": "^1.43.1",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/user-event": "^14.5.2",
     "@types/jest": "^29.5.12",

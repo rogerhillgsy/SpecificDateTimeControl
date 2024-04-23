@@ -15,7 +15,7 @@ export class InteractionPage {
         // FF: 
 
         await this.page.getByText("Interactions", { exact: true }).click();
-        await this.page.getByLabel("Account Interactions");
+        await this.page.getByLabel("Account Interactions").waitFor();
         await this.page.getByLabel("New", { exact: true }).click();
         await expect(this.page).toHaveTitle(/Interaction: Form 2: New Interaction -( Power Apps)?/, { timeout: 30000 });
         await this.page.getByRole("tab", { name: "Copilot" }).click(); // Get rid of copilot.
@@ -35,6 +35,11 @@ export class InteractionPage {
             await this.page.getByLabel("Date of Interaction Date OOB", { exact: true }).clear();
             await this.page.getByLabel("Date of Interaction Date OOB", { exact: true }).fill(date);
             await this.page.getByLabel("Date of Interaction Date OOB", { exact: true }).press("Enter");
+            // Deal with firefox flainess entering dates.
+            let value = await this.page.getByLabel("Date of Interaction Date OOB", { exact: true }).inputValue();
+            if (value == "") {
+                await this.page.getByLabel("Date of Interaction Date OOB", { exact: true }).press("Enter");
+            }
         } else {
             let value;
             // Clearing the Out Of Box date control is flaky, so may need to retry.

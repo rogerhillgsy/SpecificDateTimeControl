@@ -4,7 +4,7 @@ import { test, expect } from "./interaction-fixture";
 /**
  * List of locales we will test with.
  */
-const locales = [{ locale: "en-GB", timezoneId: "Europe/London" }];
+const locales = [{ locale: "en-US", timezoneId: "Europe/London" }];
 const locale = locales[0];
 
 // Run our tests with the each locale.

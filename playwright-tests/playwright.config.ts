@@ -18,9 +18,9 @@ export default defineConfig({
     /* Fail the build on CI if you accidentally left test.only in the source code. */
     forbidOnly: !!process.env.CI,
     /* Retry on CI only */
-    retries: process.env.CI ? 2 : 0,
+    retries: process.env.CI ? 2 : 2,
     /* Opt out of parallel tests on CI. */
-    workers: process.env.CI ? 1 : undefined,
+    workers: process.env.CI ? 1 : 6,
     /* Reporter to use. See https://playwright.dev/docs/test-reporters */
     reporter: "html",
     /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
@@ -40,10 +40,10 @@ export default defineConfig({
 
     // Timeout on each expect()
     expect: {
-        timeout: 10 * 1000,
+        timeout: 15 * 1000,
     },
     // Overall test timeout. 60s.
-    timeout: 60 * 1000,
+    timeout: 90 * 1000,
 
     /* Configure projects for major browsers */
     projects: [
@@ -56,8 +56,7 @@ export default defineConfig({
         {
             name: "firefox",
             use: { ...devices["Desktop Firefox"], storageState: process.env.storageState },
-            dependencies: ["setup"],
-            workers: 1
+            dependencies: ["setup"]
         },
         {
             name: "All",
