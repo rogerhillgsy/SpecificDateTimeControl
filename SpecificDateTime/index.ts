@@ -103,6 +103,56 @@ export class SpecificDateTime implements ComponentFramework.StandardControl<IInp
     }
 
     /**
+     *
+     * @param input Process the input "date" parameter that will be either a date (in a format recognised by the
+     *              Javascript Date() constructor) or an offset in days from the current date.
+     * @returns
+     */
+    private processDateParameter(input: string | undefined): Date | undefined {
+        let date: Date | undefined = undefined;
+        if (input) {
+            // If the input is a number
+            const offset = Number(input);
+            if (Number.isNaN(offset)) {
+                date = new Date(input);
+            } else {
+                date = new Date(Date.now() + offset * 24 * 60 * 60 * 1000);
+            }
+            if (Number.isNaN(date.getTime())) {
+                return undefined;
+            } else {
+                return date;
+            }
+        }
+        return date;
+    }
+
+    /**
+     * Format two dates into a range that can be displayed to the user (either date may be undefined)
+     * @param lowBound lower bound (or undefined)
+     * @param highBound  upper date bound (or undefined)
+     * @returns 
+     */
+    private formatDateRange( lowBound: Date | undefined, highBound: Date | undefined) : string {
+        let rv = "Enter any valid date";
+        let lowString = lowBound?.toLocaleDateString();
+        let highString = highBound?.toLocaleDateString();
+        if ( lowBound && highBound ) {
+            rv = `Enter a date between ${lowString} and ${highString}`;
+        } else {
+            if ( !lowBound && highBound ) {
+                rv = `Enter a date before ${highString}`;
+            } else {
+                if (lowBound && ! highBound ) {
+                    rv = `Enter a date after ${lowString}`;
+                }
+            }
+        }
+        return rv;
+    }
+
+
+    /**
      * Used to initialize the control instance. Controls can kick off remote server calls and other initialization actions here.
      * Data-set values are not initialized here, use updateView.
      * @param context The entire property bag available to control via Context Object; It contains values as set up by the customizer mapped to property names defined in the manifest, as well as utility functions.
@@ -122,8 +172,8 @@ export class SpecificDateTime implements ComponentFramework.StandardControl<IInp
         this._dateRefreshed = this.dateUpdated.bind(this);
         this._timeRefreshed = this.timeUpdated.bind(this);
 
-        this._earliestDate = context.parameters.MinDate?.raw ?? undefined;
-        this._latestDate = context.parameters.MaxDate?.raw ?? undefined;
+        this._earliestDate = this.processDateParameter(context.parameters.MinDate?.raw ?? undefined);
+        this._latestDate = this.processDateParameter(context.parameters.MaxDate?.raw ?? undefined);
 
         // To display the control we create and populate a div with a date and time input control and then
         // attach to the "container" element passed in from the environment.
@@ -135,11 +185,11 @@ export class SpecificDateTime implements ComponentFramework.StandardControl<IInp
         this.dateInputElement.addEventListener("input", this._dateRefreshed);
         this.dateInputElement.setAttribute("class", "dateControl");
         this.dateInputElement.setAttribute("id", "dateInput");
-        this.dateInputElement.setAttribute("min", "2023-01-01");
+        this.dateInputElement.setAttribute("min", this._earliestDate?.toISOString().split("T")[0] ?? "");
         this.dateInputElement.setAttribute("data-testid", "date");
-        const nextMonth = new Date(Date.now() + ONEDAY);
-        this.dateInputElement.setAttribute("max", nextMonth.toISOString().split("T")[0]);
-        this.dateInputElement.setAttribute("title", context.mode.isControlDisabled ? "disabled" : "enabled");
+        this.dateInputElement.setAttribute("max", this._latestDate?.toISOString().split("T")[0] ?? "");
+        const title = this.formatDateRange( this._earliestDate, this._latestDate );
+        this.dateInputElement.setAttribute("title", title);
 
         this.timeInputElement = document.createElement("input");
         this.timeInputElement.setAttribute("type", "time");
@@ -156,10 +206,10 @@ export class SpecificDateTime implements ComponentFramework.StandardControl<IInp
 
     /**
      * Called when any value in the property bag has changed. This includes field values, data-sets, global values such as container height and width, offline status, control metadata values such as label, visible, etc.
-     * 
+     *
      * Note that we need to be very careful here with the date value returned from the PCF framework. This will **not** be the same as the one we returned from getOutputs().
      * It needs to be adjusted by the CRM user's timezone offset and the locale timezone offset before we try to use it in the control.
-     * 
+     *
      * @param context The entire property bag available to control via Context Object; It contains values as set up by the customizer mapped to names defined in the manifest, as well as utility functions
      */
     public updateView(context: ComponentFramework.Context<IInputs>): void {

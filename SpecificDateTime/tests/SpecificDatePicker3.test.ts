@@ -30,8 +30,8 @@ describe( 'Testing Clearing the SpecificDatePicker', () => {
         container = screen.getByTestId("container") as  HTMLDivElement;
         context.parameters.MinDate = mock<IInputs["MinDate"]>();
         context.parameters.MaxDate = mock<IInputs["MaxDate"]>();
-        context.parameters.MinDate.raw = new  Date('2024-01-01T00:00');
-        context.parameters.MaxDate.raw = new  Date('2024-05-01T00:00');
+        context.parameters.MinDate.raw = '2024-01-01T00:00';
+        context.parameters.MaxDate.raw = '2024-05-01T00:00';
         
         datePicker.init(context, outputChanged,state, container);
 
