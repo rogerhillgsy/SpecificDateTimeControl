@@ -118,10 +118,39 @@ export class SpecificDateTime implements ComponentFramework.StandardControl<IInp
             } else {
                 date = new Date(Date.now() + offset * 24 * 60 * 60 * 1000);
             }
-            return date;
+            if (Number.isNaN(date.getTime())) {
+                return undefined;
+            } else {
+                return date;
+            }
         }
         return date;
     }
+
+    /**
+     * Format two dates into a range that can be displayed to the user (either date may be undefined)
+     * @param lowBound lower bound (or undefined)
+     * @param highBound  upper date bound (or undefined)
+     * @returns 
+     */
+    private formatDateRange( lowBound: Date | undefined, highBound: Date | undefined) : string {
+        let rv = "Enter any valid date";
+        let lowString = lowBound?.toLocaleDateString();
+        let highString = highBound?.toLocaleDateString();
+        if ( lowBound && highBound ) {
+            rv = `Enter a date between ${lowString} and ${highString}`;
+        } else {
+            if ( !lowBound && highBound ) {
+                rv = `Enter a date before ${highString}`;
+            } else {
+                if (lowBound && ! highBound ) {
+                    rv = `Enter a date after ${lowString}`;
+                }
+            }
+        }
+        return rv;
+    }
+
 
     /**
      * Used to initialize the control instance. Controls can kick off remote server calls and other initialization actions here.
@@ -159,7 +188,7 @@ export class SpecificDateTime implements ComponentFramework.StandardControl<IInp
         this.dateInputElement.setAttribute("min", this._earliestDate?.toISOString().split("T")[0] ?? "");
         this.dateInputElement.setAttribute("data-testid", "date");
         this.dateInputElement.setAttribute("max", this._latestDate?.toISOString().split("T")[0] ?? "");
-        const title = "test"; // `Enter a date between ${this._earliestDate} and ${this._latestDate}`;
+        const title = this.formatDateRange( this._earliestDate, this._latestDate );
         this.dateInputElement.setAttribute("title", title);
 
         this.timeInputElement = document.createElement("input");

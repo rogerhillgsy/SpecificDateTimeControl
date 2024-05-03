@@ -39,6 +39,7 @@ describe( 'Test min/max date features', () => {
         ["Relative min/max date", "-20", "0", -21, -1, +1],
         ["Relative min/max date - today", "-20", "1", -21 , 0, +10],
         ["Invalid date", "2024/04/03", "0", -30 , -1 , +1],
+        ["Not a date", "val", "val", undefined , 0 , undefined],
     ])( "%s Min/Max date functions", 
       async ( description: string, min: string, max: string, 
         expectedLow: number | string | undefined, expectedOk: number | string | undefined, expectedHigh: number | string | undefined ) => {
@@ -99,6 +100,23 @@ describe( 'Test min/max date features', () => {
             expect(outputChanged).toHaveBeenCalledTimes(expectedCalls);
         }
 
+    },1000*1000);
+
+    test.each( [
+        ['2024-04-12', '2024-05-03', "Enter a date between 12/04/2024 and 03/05/2024"],
+        ['2024-04-12', null, "Enter a date after 12/04/2024"],
+        [null, '2024-05-03', "Enter a date before 03/05/2024"],
+        [null, null, "Enter any valid date"],
+    ])( "Test tooltip format %s/%s", (lowBound:string | null, upperBound: string | null, expected: string ) =>{
+    
+        context.parameters.MinDate.raw = lowBound;
+        context.parameters.MaxDate.raw = upperBound;
+        let expectedCalls = 0;
+    
+        datePicker.init(context, outputChanged,state, container);
+
+        expect( getByTestId(container, "date").getAttribute("title")).toEqual(expected);
+        
     },1000*1000);
 })
 
