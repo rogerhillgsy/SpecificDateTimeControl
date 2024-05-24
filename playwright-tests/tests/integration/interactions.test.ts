@@ -70,7 +70,7 @@ test( "Create new Interaction with day > 12", async( {page}) => {
     await expect(page.getByLabel("Time of Interaction Date OOB", { exact: true })).not.toBeVisible();
     await page.getByTestId("time").focus();
     await page.getByTestId("time").pressSequentially(timeText, { delay: 100 });
-   // await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
 
     await expect(page.getByLabel("Date of Interaction Date OOB", { exact: true })).not.toBeEmpty();
     await expect(page.getByLabel("Time of Interaction Date OOB", { exact: true })).toBeVisible();
