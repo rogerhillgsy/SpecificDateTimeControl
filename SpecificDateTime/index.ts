@@ -201,7 +201,7 @@ export class SpecificDateTime implements ComponentFramework.StandardControl<IInp
 
         this._container.appendChild(this.dateInputElement);
         this._container.appendChild(this.timeInputElement);
-        container.appendChild(this._container);
+        container.appendChild(this._container); 
     }
 
     /**

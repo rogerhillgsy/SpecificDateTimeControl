@@ -42,7 +42,7 @@ test( "Create new Interaction with day > 12", async( {page}) => {
     await page.getByText("Interactions", { exact: true }).click();
     await page.getByLabel("New", { exact: true }).click();
     await expect(page).toHaveTitle(/Interaction: Form 2: New Interaction -( Power Apps)?/,{ timeout: 30000 });
-    await page.getByRole('tab', { name: 'Copilot' }).click(); // Get rid of copilot.
+    // await page.getByRole('tab', { name: 'Copilot' }).click(); // Get rid of copilot.
 
     await page.getByLabel("Account, Lookup", { exact: true }).fill("fullers");
     await page.getByLabel("Fullers").click();

@@ -19,7 +19,7 @@ export class InteractionPage {
         await this.page.getByLabel("Account Interactions").waitFor();
         await this.page.getByLabel("New", { exact: true }).click();
         await expect(this.page).toHaveTitle(/Interaction: Form 2: New Interaction -( Power Apps)?/, { timeout: 30000 });
-        await this.page.getByRole("tab", { name: "Copilot" }).click(); // Get rid of copilot.
+      //  await this.page.getByRole("tab", { name: "Copilot" }).click(); // Get rid of copilot.
 
         // Could set the account on New form, but don't really need to.
         // await this.page.getByLabel("Account, Lookup", { exact: true }).fill("fullers");
