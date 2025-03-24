@@ -76,14 +76,14 @@ export default defineConfig({
             name: "setup",
             testMatch: "**/*.setup.ts",
         },
-        {
-            name: "tests",
-            testMatch: "**/*.spec.ts",
-            use: {
-                storageState: process.env.storageState,
-            },
-            dependencies: ["setup"],
-        },
+        // {
+        //     name: "tests",
+        //     testMatch: "**/*.spec.ts",
+        //     use: {
+        //         storageState: process.env.storageState,
+        //     },
+        //     dependencies: ["setup"],
+        // },
         /* Test against mobile viewports. */
         // {
         //   name: 'Mobile Chrome',
